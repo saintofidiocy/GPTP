@@ -22,14 +22,6 @@ namespace hooks {
 //part at the bottom of the screen
 void function_00458120() {
 
-	struct UnitStatFuncArrayEntry {
-		u32 unitId;	//unused?
-		u32 UnitStatCondFunc;
-		u32 UnitStatActFunc;
-	};
-
-	UnitStatFuncArrayEntry* const unitStatFuncs	= (UnitStatFuncArrayEntry*)	0x005193A0;
-
 	u8*		const u8_0068C1E5				= (u8*)						0x0068C1E5;
 	Bool8*	const bCanUpdateStatDataDialog	= (Bool8*)					0x0068C1F8;
 

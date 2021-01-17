@@ -10,12 +10,14 @@ const int UNIT_ARRAY_LENGTH		= 1700;
 const int BULLET_ARRAY_LENGTH	= 100;
 const int SPRITE_ARRAY_LENGTH	= 2500;
 const int SELECTION_ARRAY_LENGTH = 12;
-const int UNIT_TYPE_COUNT		= 228;
-const int TECH_TYPE_COUNT		= 44;
-const int UPGRADE_TYPE_COUNT	= 61;
-const int WEAPON_TYPE_COUNT		= 130;
-const int FLINGY_TYPE_COUNT		= 209;
-const int IMAGE_TYPE_COUNT		= 999;
+
+// use DatExt variables
+extern int UNIT_TYPE_COUNT;		//= 228;
+extern int TECH_TYPE_COUNT;		//= 44;
+extern int UPGRADE_TYPE_COUNT;	//= 61;
+extern int WEAPON_TYPE_COUNT;		//= 130;
+extern int FLINGY_TYPE_COUNT;		//= 209;
+extern int IMAGE_TYPE_COUNT;		//= 999;
 
 #include "structures/CUnit.h"
 #include "structures/CBullet.h"
@@ -488,12 +490,18 @@ struct AI_Main {
 /*378*/  u32 AI_DefenseUse_AG[10];
 /*3A0*/  u32 AI_DefenseUse_GA[10];
 /*3C8*/  u32 AI_DefenseUse_AA[10];
-/*3F0*/  u8  AI_DefineMax[UNIT_TYPE_COUNT];
-/*4D4*/  CUnit* mainMedic;
-/*4D8*/  Box32 genCmdLoc;
+/*3F0*/  u8  AI_DefineMax[1]; // UNIT_TYPE_COUNT entries, but DatExt makes this variable
+/*4D4*/  //CUnit* mainMedic;
+/*4D8*/  //Box32 genCmdLoc;
+
+// Hopefully these are valid xd
+CUnit*& mainMedic() { return (CUnit*&)AI_DefineMax[UNIT_TYPE_COUNT]; }
+Box32& genCmdLoc() { return (Box32&)AI_DefineMax[UNIT_TYPE_COUNT + sizeof(CUnit*)]; }
+
 };
 
-C_ASSERT(sizeof(AI_Main) == 1256); /*0x4E8*/
+// DatExt makes this a variable struct
+//C_ASSERT(sizeof(AI_Main) == 1256); /*0x4E8*/
 //static_assert(sizeof(AI_Main) == 1256, "The size of the AI_Main structure is invalid");
 
 struct AiCaptain {
@@ -528,7 +536,8 @@ C_ASSERT(sizeof(AiCaptain) == 52);
 
 // From BWAPI Offsets.h, used in scbwdata.h by UnitAvailability
 struct _uavail {
-	u8 available[PLAYER_COUNT][UNIT_TYPE_COUNT];
+	//u8 available[PLAYER_COUNT][UNIT_TYPE_COUNT];
+  u8* available[PLAYER_COUNT];
 };
 
 class StringTbl {
