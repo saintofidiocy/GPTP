@@ -33,7 +33,8 @@ s32 techdata_r[] = {/* minerals */ 0,   0x00447B78 +4, 0x004486C9 +3, 0x0042CDD5
 
 
 // Techdata.dat tables
-void* tech_newArrs[2] = {0};
+const int TECH_ARR_COUNT = 2;
+void* tech_newArrs[TECH_ARR_COUNT] = {0};
 
            // ID offset, ptr, ptr, ptr, ..., 0, ...
 s32 tech_bwAvail[] = {0 -24, 0x004CB755 +3, 0x004CB781 +3, 0x004CB8B8 +3, 0x004CB8E4 +3, 0x004CE897 +3, 0x004CE8BA +3,  0,
@@ -64,7 +65,7 @@ namespace DatExt {
     datTablePatch((DatLoad*)LoadTable::Techdata_Dat, techdata_r);
     
     // tech_bwAvail
-    tech_newArrs[0] = malloc((newCount - 24) * 12);
+    tech_newArrs[0] = malloc((newCount - 24) * PLAYER_COUNT);
     // - Null-terminated list of null-terminated lists of addresses
     // - First value in list is the image ID referenced
     for(i=0; tech_bwAvail[i] != 0 || i == 0; i++){
@@ -78,7 +79,7 @@ namespace DatExt {
     }
 
     // tech_bwResearch
-    tech_newArrs[1] = malloc((newCount - 24) * 12);
+    tech_newArrs[1] = malloc((newCount - 24) * PLAYER_COUNT);
     // - Null-terminated list of null-terminated lists of addresses
     // - First value in list is the image ID referenced
     for(i=0; tech_bwResearch[i] != 0 || i == 0; i++){
@@ -95,16 +96,16 @@ namespace DatExt {
     constReplace(tech_consts, newCount);
 
     // Apply 'newArrs' to appropriate scbwdata.h variables
-    for (i = 0; i < 12; i++) {
-      TechBw_var->isEnabled[i] = (u8*)(tech_newArrs[0]) + (newCount - 24)*i;
-      TechBw_var->isResearched[i] = (u8*)(tech_newArrs[1]) + (newCount - 24) *i;
+    for (i = 0; i < PLAYER_COUNT; i++) {
+      TechBw_var->isEnabled[i] = (u8*)(tech_newArrs[0]) + (newCount - 24) * i;
+      TechBw_var->isResearched[i] = (u8*)(tech_newArrs[1]) + (newCount - 24) * i;
     }
 
   }
 
   
   void techdata_dat_unpatch() {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < TECH_ARR_COUNT; i++) {
       if (tech_newArrs[i] != NULL) {
         free(tech_newArrs[i]);
         tech_newArrs[i] = NULL;

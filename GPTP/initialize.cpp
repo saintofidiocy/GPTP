@@ -148,8 +148,6 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
 	hooks::injectGameHooks();
 	hooks::injectDrawHook();
   hooks::injectDatLoadHooks();
-  
-  DatExt::setDatSize((DatLoad*)DatExt::LoadTable::Units_Dat, 252);
 
 	//in order of creation
 	hooks::injectInfestationHooks();

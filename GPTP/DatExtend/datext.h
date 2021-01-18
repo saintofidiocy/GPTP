@@ -46,6 +46,10 @@ namespace DatExt {
   };
 
 
+  // TBL for extended unit names
+  extern StringTbl* unitNamesTbl;
+
+
   // Used in constReplace -- writes a `size`-byte value of `val*factor+add` to the zero-terminated list of pointers in `ptr`
   typedef struct {
     s32 factor;
@@ -57,6 +61,8 @@ namespace DatExt {
   // Dat patching functions
   bool setDatSize(DatLoad* datTablePtr, u32 size);
   void unloadDatFiles();
+
+  void loadUnitNamesTbl();
 
   // general patching functions
   void datTablePatch(DatLoad* datTablePtr, s32* list);
@@ -73,6 +79,10 @@ namespace DatExt {
   void images_dat_doPatch(u32 newCount);
   void upgrades_dat_doPatch(u32 newCount);
   void techdata_dat_doPatch(u32 newCount);
+  void sfxdata_dat_doPatch(u32 newCount);
+  //void portdata_dat_doPatch(u32 newCount);
+  void orders_dat_doPatch(u32 newCount);
+  //void mapdata_dat_doPatch(u32 newCount);
 
   void units_dat_unpatch();
   void images_dat_unpatch();

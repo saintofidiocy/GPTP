@@ -231,7 +231,7 @@ void orders_Spell(CUnit* unit) {
 							unit->mainOrderState = 2;
 
 							if(unit->pAI != NULL)
-								AIScriptController[unit->playerId].spellcasterTimer = 1;
+								AIScriptController[unit->playerId]->spellcasterTimer = 1;
 
 						}
 

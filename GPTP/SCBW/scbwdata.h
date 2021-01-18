@@ -162,7 +162,7 @@ struct DatLoad {
 };
 
 namespace units_dat {
-//SCBW_DATA(const DatLoad*, unitsDat, 0x00513C30);
+//SCBW_DATA(const DatLoad*, unitsDat, 0x00513C30); // now in scbwdata.cpp
 
 SCBW_DATA_REF(u16*,		Graphic,				unitsDat[0].address);	//006644F8 -- DatExt changes this to u16 from u8
 SCBW_DATA_REF(u16*,		SubUnit,				unitsDat[1].address);	//006607C0
@@ -221,7 +221,7 @@ SCBW_DATA_REF(u8*,		BroodwarOnly,			unitsDat[52].address);	//006606D8
 } //units_dat (last entry at 0x00513EAC)
 
 namespace flingy_dat {
-//SCBW_DATA(const DatLoad*, flingyDat, 0x00515A38);
+//SCBW_DATA(const DatLoad*, flingyDat, 0x00515A38); // now in scbwdata.cpp
 
 SCBW_DATA_REF(u16*, SpriteID,           flingyDat[0].address);	//006CA318
 SCBW_DATA_REF(u32*, TopSpeed,           flingyDat[1].address);	//006C9EF8
@@ -233,7 +233,7 @@ SCBW_DATA_REF(u8*,  MovementControl,    flingyDat[6].address);	//006C9858
 } //flingy_dat (last entry at 0x00515A80)
 
 namespace weapons_dat {
-//SCBW_DATA(const DatLoad*, weaponsDat, 0x00513868);
+//SCBW_DATA(const DatLoad*, weaponsDat, 0x00513868); // now in scbwdata.cpp
 
 SCBW_DATA_REF(u16*, Label,              weaponsDat[0].address); //006572E0
 SCBW_DATA_REF(u32*, FlingyId,           weaponsDat[1].address); //00656CA8
@@ -262,7 +262,7 @@ SCBW_DATA_REF(u16*, WeaponIconId,		weaponsDat[23].address);//00656780
 } //weapons_dat (last entry at 0x0051397C)
 
 namespace upgrades_dat {
-//SCBW_DATA(const DatLoad*, upgradesDat, 0x005136E0);
+//SCBW_DATA(const DatLoad*, upgradesDat, 0x005136E0); // now in scbwdata.cpp
 
 SCBW_DATA_REF(u16*, MineralCostBase,    upgradesDat[0].address);	//00656740
 SCBW_DATA_REF(u16*, MineralCostFactor,  upgradesDat[1].address);	//006559C0
@@ -279,7 +279,7 @@ SCBW_DATA_REF(u8*,  MaxRepeats,         upgradesDat[10].address);	//00655700
 } //upgrades_dat (last entry at 0x00513764)
 
 namespace techdata_dat {
-//SCBW_DATA(const DatLoad*, techdataDat, 0x005137D8);
+//SCBW_DATA(const DatLoad*, techdataDat, 0x005137D8); // now in scbwdata.cpp
 
 SCBW_DATA_REF(u16*, MineralCost,        techdataDat[0].address);	//00656248
 SCBW_DATA_REF(u16*, GasCost,            techdataDat[1].address);	//006561F0
@@ -295,7 +295,7 @@ SCBW_DATA_REF(u16*, Label,              techdataDat[7].address);	//006562A0
 } //techdata_dat (last entry at 0x00513850)
 
 namespace orders_dat {
-//SCBW_DATA(const DatLoad*, ordersDat, 0x00513EC8);
+//SCBW_DATA(const DatLoad*, ordersDat, 0x00513EC8); // now in scbwdata.cpp
 
 SCBW_DATA_REF(u16*,		Label,              ordersDat[0].address);	//00665280
 SCBW_DATA_REF(u8*,		UseWeaponTargeting, ordersDat[1].address);	//00664B00
@@ -319,7 +319,7 @@ SCBW_DATA_REF(u8*,		ObscuredOrder,		ordersDat[18].address);	//00665400
 } //orders_dat (last entry at 0x00513FA0)
 
 namespace sprites_dat {
-//SCBW_DATA(const DatLoad*, spritesDat, 0x00513FB8);
+//SCBW_DATA(const DatLoad*, spritesDat, 0x00513FB8); // now in scbwdata.cpp
 
 SCBW_DATA_REF(u16*, ImageId,            spritesDat[0].address);		//00666160
 SCBW_DATA_REF(s8*,  HpBarSize,          spritesDat[1].address);		//00665E50
@@ -330,7 +330,7 @@ SCBW_DATA_REF(u8*,  IsVisible,          spritesDat[3].address);		//00665C48
 } //sprites_dat (last entry at 0x00513FF4)
 
 namespace images_dat {
-//SCBW_DATA(const DatLoad*, imagesDat, 0x00514010);
+//SCBW_DATA(const DatLoad*, imagesDat, 0x00514010); // now in scbwdata.cpp
 
 //SCBW_DATA_REF(const u32*,  ???,		imagesDat[0].address);	//00668AA0 //"GRP File" according to EUDDB
 SCBW_DATA_REF(const u8*,  IsTurnable,   imagesDat[1].address);	//0066E860
@@ -439,7 +439,7 @@ SCBW_DATA(PlayerFlags<u32>*, playerVision,      0x0057F1EC);
 
 SCBW_DATA(CUnit**,  activePortraitUnit,   0x00597248);
 
-SCBW_DATA_REF(AI_Main*,       AIScriptController,   0x0068FEE8); // @TODO
+SCBW_DATA_REF(AI_Main**,       AIScriptController,   0x0068FEE8); // DatExt makes AI_Main a variable size, so include a pointer for each player
 SCBW_DATA(AiCaptain* const*, AiRegionCaptains,  0x0069A604);
 SCBW_DATA(u32*,           aiSupplyReserved,     0x006CA4BC);
 SCBW_DATA_REF(u32*, aiStrength, 0x006BB210); // aiStrength[2][UNIT_TYPE_COUNT] ???

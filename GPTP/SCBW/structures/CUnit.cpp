@@ -2,6 +2,7 @@
 #include "CUnit.h"
 #include "../api.h"
 #include "../enumerations.h"
+#include <DatExtend/datext.h>
 
 //-------- Unit stats and properties --------//
 
@@ -140,12 +141,13 @@ char* CUnit::getName(u16 unitId) {
 
 	char* return_value;
 
-	if(unitId >= UNIT_TYPE_COUNT)
-		return_value = (char*)StringEmpty;
-	else
-	if (units_dat::MapStringId[unitId] != 0)
-		return_value = (char*)mapStringTbl->getString(units_dat::MapStringId[unitId]);
-	else
+  if (unitId >= UNIT_TYPE_COUNT)
+    return_value = (char*)StringEmpty;
+  else if (units_dat::MapStringId[unitId] != 0)
+    return_value = (char*)mapStringTbl->getString(units_dat::MapStringId[unitId]);
+  else if (DatExt::unitNamesTbl != NULL)
+    return_value = (char*)((StringTbl*)&DatExt::unitNamesTbl)->getString(unitId + 1); // must be a pointer to a pointer, rather than just a pointer
+  else
 		return_value = (char*)statTxtTbl->getString(unitId + 1);
 
 	return return_value;

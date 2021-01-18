@@ -35,7 +35,8 @@ s32 upgrades_r[] = {/* minerals */   0,   0x00453F57 +3, 0x004540EF +3, 0x004541
 
 
 // Upgrades.dat tables
-void* upgs_newArrs[2] = {0};
+const int UPGS_ARR_COUNT = 2;
+void* upgs_newArrs[UPGS_ARR_COUNT] = {0};
 
            // ID offset, ptr, ptr, ptr, ..., 0, ...
 s32 upgs_bwAvail[] = {0 -46, 0x00403418 +4, 0x004CBA97 +3, 0x004CBC1A +3, 0x004CE7E7 +3, 0x004CE80A +3, 0,
@@ -100,7 +101,7 @@ namespace DatExt {
     datTablePatch((DatLoad*)LoadTable::Upgrades_Dat, upgrades_r);
 
     // upgs_bwAvail
-    upgs_newArrs[0] = malloc((newCount - 46) * 12);
+    upgs_newArrs[0] = malloc((newCount - 46) * PLAYER_COUNT);
     // - Null-terminated list of null-terminated lists of addresses
     // - First value in list is the image ID referenced
     for(i=0; upgs_bwAvail[i] != 0 || i == 0; i++){
@@ -114,7 +115,7 @@ namespace DatExt {
     }
 
     // upgs_bwResearch
-    upgs_newArrs[1] = malloc((newCount - 46) * 12);
+    upgs_newArrs[1] = malloc((newCount - 46) * PLAYER_COUNT);
     // - Null-terminated list of null-terminated lists of addresses
     // - First value in list is the image ID referenced
     for(i=0; upgs_bwResearch[i] != 0 || i == 0; i++){
@@ -130,7 +131,7 @@ namespace DatExt {
     constReplace(upgs_consts, newCount);
 
     // Apply 'newArrs' to appropriate scbwdata.h variables
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < PLAYER_COUNT; i++) {
       UpgradesBw_var->maxLevel[i] = (u8*)(upgs_newArrs[0]) + (newCount - 46)*i;
       UpgradesBw_var->currentLevel[i] = (u8*)(upgs_newArrs[1]) + (newCount - 46)*i;
     }
@@ -138,7 +139,7 @@ namespace DatExt {
 
   
   void upgrades_dat_unpatch() {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < UPGS_ARR_COUNT; i++) {
       if (upgs_newArrs[i] != NULL) {
         free(upgs_newArrs[i]);
         upgs_newArrs[i] = NULL;

@@ -9,7 +9,7 @@ DATEXT_VAR_REF(UNITDEATHS*, unitCompleteTable_var);
 DATEXT_VAR_REF(UNITDEATHS*, unitKilledTable_var);
 DATEXT_VAR_REF(BUTTON_SET*, buttonSetTable_var);
 DATEXT_VAR_REF(UnitStatFuncArrayEntry*, unitStatFuncs_var);
-DATEXT_VAR_REF(AI_Main*, AIScriptController_var); // TODO: fix
+DATEXT_VAR_REF(AI_Main**, AIScriptController_var);
 DATEXT_VAR_REF(u32*, aiStrength_var);
 DATEXT_VAR_REF(_uavail*, UnitAvailability_var);
 
@@ -237,7 +237,8 @@ s32 unit_r[] = {
 
 
 // Units.dat Arrays:
-void* unit_newArrs[7] = {NULL}; // one for each of the following:
+const int UNIT_ARR_COUNT = 7;
+void* unit_newArrs[UNIT_ARR_COUNT] = {NULL}; // one for each of the following:
 
 struct {
   s32 offset;
@@ -385,7 +386,7 @@ s32 unit_AIStruct[] = {0,  0,    0x0043EC2A +2, 0x0043EC41 +2, 0x0043FB3F +2, 0x
 
                // factor, add, size,       ptr, ptr, ptr, ...,  0,  ...
 s32 unit_consts[] = { 1,  0, sizeof(u32),   0x004BF04C +1, 0x004BF3BC +1, 0x0049E1AA +2, 0x0046E24C +2, 0x00497223 +1, 0x004314D9 +2, 0x004316D7 +2, 0,
-                      1,  0, sizeof(u16), 0x0047B090 +3, 0,
+                      //1,  0, sizeof(u16), 0x0047B090 +3, 0, // overwritten by CUnit::getName call in dat_load_inject.cpp
                       2,  0, sizeof(u32),   0x004BF038 +1, 0x004BF060 +1, 0x004BF074 +1, 0x004BF088 +1, 0x004BF09C +1, 0x004BF3A8 +1, 0x004BF3D0 +1, 0x004BF3E4 +1, 0x004BF3F8 +1, 0x004BF40C +1, 0x0046E165 +1, 0,
                       4,  0, sizeof(u32),   0x004BF024 +1, 0x004BF391 +1, 0x0043161C +2, 0x004316F6 +2, 0,
                       48, 0, sizeof(u32),   0x00488FA3 +1, 0,
@@ -491,7 +492,7 @@ namespace DatExt {
     u32 i,j, offs;
 
     datTablePatch((DatLoad*)LoadTable::Units_Dat, unit_r);
-
+    
     // Copy button & unit stuff to bigger memory (the now empty unit complete/deaths/etc. tables)
     //memoryPatch(unit_copyTables[0].newOfs, (u8*)unit_copyTables[0].offset, unit_copyTables[0].size);
     //memoryPatch(unit_copyTables[1].newOfs, (u8*)unit_copyTables[1].offset, unit_copyTables[1].size);
@@ -506,7 +507,7 @@ namespace DatExt {
         bstat[i].UnitStatCondFunc = bstat[4].UnitStatCondFunc;
         bstat[i].UnitStatActFunc = bstat[4].UnitStatActFunc;
       } else { // Normal
-        bunit[i].connectedUnit = 0xFFFF; // Dunno what this is LOL
+        bunit[i].connectedUnit = 0xFFFF; // Dunno what this is
         bstat[i].unitId = i;
         bstat[i].UnitStatCondFunc = bstat[0].UnitStatCondFunc;
         bstat[i].UnitStatActFunc = bstat[0].UnitStatActFunc;
@@ -531,51 +532,51 @@ namespace DatExt {
 
 
     // unit_AllCount
-    unit_newArrs[0] = malloc(newCount * 12 * 4);
+    unit_newArrs[0] = malloc(newCount * PLAYER_COUNT * sizeof(u32));
     // - Null-terminated list of null-terminated lists of addresses
     // - First value in list is the unit ID referenced
     for (i = 0; unit_AllCount[i] != 0 || i == 0; i++) {
-      offs = (u32)unit_newArrs[0] + unit_AllCount[i++] * 12 * 4; // ID offset
+      offs = (u32)unit_newArrs[0] + unit_AllCount[i++] * PLAYER_COUNT * sizeof(u32); // ID offset
       i += simpleReplace(&unit_AllCount[i], offs);
     }
 
     // unit_Complete
-    unit_newArrs[1] = malloc(newCount * 12 * 4);
+    unit_newArrs[1] = malloc(newCount * PLAYER_COUNT * sizeof(u32));
     // - Null-terminated list of null-terminated lists of addresses
     // - First value in list is the unit ID referenced, second value is the player ID
     for (i = 0; unit_Complete[i] != 0 || i == 0; i++) {
-      offs = (u32)unit_newArrs[1] + (unit_Complete[i] * 12 + unit_Complete[i + 1]) * 4; // ID offset
+      offs = (u32)unit_newArrs[1] + (unit_Complete[i] * PLAYER_COUNT + unit_Complete[i + 1]) * sizeof(u32); // ID offset
       i += simpleReplace(&unit_Complete[i], offs);
     }
 
     // unit_Killed
-    unit_newArrs[2] = malloc(newCount * 12 * 4);
+    unit_newArrs[2] = malloc(newCount * PLAYER_COUNT * sizeof(u32));
     simpleReplace(unit_Killed, (u32)unit_newArrs[2]);
 
     // unit_Deaths
-    unit_newArrs[3] = malloc(newCount * 12 * 4);
+    unit_newArrs[3] = malloc(newCount * PLAYER_COUNT * sizeof(u32));
     simpleReplace(unit_Deaths, (u32)unit_newArrs[3]);
 
     // unit_Available
-    unit_newArrs[4] = malloc(newCount * 12 * 4);
+    unit_newArrs[4] = malloc(newCount * PLAYER_COUNT * sizeof(u32));
     simpleReplace(unit_Available, (u32)unit_newArrs[4]);
 
     // unit_AIStrength
-    unit_newArrs[5] = malloc(newCount * 4 * 2);
+    unit_newArrs[5] = malloc(newCount * sizeof(u32) * 2);
     // - Zero-terminated list of zero-terminated lists
     j = 0;
     do {
-      offs = (u32)unit_newArrs[5] + (unit_AIStrength[j] * newCount + unit_AIStrength[j + 1]) * 4; // factor * 12 + add
+      offs = (u32)unit_newArrs[5] + (unit_AIStrength[j] * newCount + unit_AIStrength[j + 1]) * sizeof(u32); // factor * 12 + add
       j += simpleReplace((u32*)&unit_AIStrength[j + 2], offs);
       j += 3;
     } while (unit_AIStrength[j] != 0 || unit_AIStrength[j + 1] != 0);
 
     // unit_AIStruct
-    unit_newArrs[6] = malloc((0x404 + newCount) * 8); // (0x404 + unit count) * 8 players
+    unit_newArrs[6] = malloc((0x404 + newCount) * PLAYABLE_PLAYER_COUNT); // (0x404 + unit count) * 8 players
     // - Zero-terminated list of {Player, Offset, ptr, ptr, ptr, ..., 0}
     j = 0;
     do {
-      offs = (u32)unit_newArrs[6] + unit_AIStruct[j] * (0x404 + newCount) + unit_AIStruct[j + 1]; // // player * (0x404 + entries) + offset
+      offs = (u32)unit_newArrs[6] + unit_AIStruct[j] * (0x404 + newCount) + unit_AIStruct[j + 1]; // player * (0x404 + entries) + offset
       j += simpleReplace((u32*)&unit_AIStruct[j + 2], offs);
       j += 3;
     } while (unit_AIStruct[j] != 0 || unit_AIStruct[j + 1] != 0);
@@ -593,7 +594,9 @@ namespace DatExt {
       UnitAvailability_var->available[i] = (u8*)(unit_newArrs[4]) + newCount * i;
     }
     aiStrength_var = (u32*)unit_newArrs[5];
-    AIScriptController_var = (AI_Main*)unit_newArrs[6]; // TODO: fix
+    for (i = 0; i < PLAYABLE_PLAYER_COUNT; i++) {
+      AIScriptController_var[i] = (AI_Main*)((u32)(unit_newArrs[6]) + (0x404 + newCount)*i);
+    }
 
     // Load flingy expand patch
     units_dat_flingyExpand();
@@ -648,7 +651,7 @@ namespace DatExt {
   }
 
   void units_dat_unpatch() {
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < UNIT_ARR_COUNT; i++) {
       if (unit_newArrs[i] != NULL) {
         free(unit_newArrs[i]);
         unit_newArrs[i] = NULL;

@@ -12,6 +12,23 @@ int FLINGY_TYPE_COUNT   = 209;
 int IMAGE_TYPE_COUNT    = 999;
 
 
+namespace {
+// why doesn't gptp have storm functions already
+typedef void* (__stdcall *SMemAlloc_type)(int size, char* filename, int line, int value); // 401
+typedef u32(__stdcall *SMemFree_type)(void* ptr, char* filename, int line, int idk);   // 403
+typedef u32(__stdcall *SFileCloseFile_type)(HANDLE hFile); // 253
+typedef u32(__stdcall *SFileGetFileSize_type)(HANDLE hFile); // 265
+typedef u32(__stdcall *SFileOpenFileEx_type)(HANDLE hArchive, char *filename, int scope, HANDLE * hFile); // 268
+typedef u32(__stdcall *SFileReadFile_type)(HANDLE hFile, void *buffer, int toRead, int *read, int idk); // 269
+SMemAlloc_type SMemAlloc = (SMemAlloc_type)(0x0041006A);
+SMemFree_type SMemFree = (SMemFree_type)(0x00410070);
+SFileCloseFile_type SFileCloseFile = (SFileCloseFile_type)(0x004100B8);
+SFileGetFileSize_type SFileGetFileSize = (SFileGetFileSize_type)(0x00410142);
+SFileOpenFileEx_type SFileOpenFileEx = (SFileOpenFileEx_type)(0x004100C4);
+SFileReadFile_type SFileReadFile = (SFileReadFile_type)(0x00410148);
+};
+
+
 namespace DatExt {
 
   struct {
@@ -33,6 +50,9 @@ namespace DatExt {
     { "portdata.dat", LoadTable::Portdata_Dat,  1320, 12, false },
     { "mapdata.dat",  LoadTable::Mapdata_Dat,    260,  4, false },
   };
+
+
+  StringTbl* unitNamesTbl = NULL;
 
 
   bool setDatSize(DatLoad* datTablePtr, u32 size) {
@@ -100,7 +120,7 @@ namespace DatExt {
     // Load patches for dat file
     switch (i) {
       case DatFile::Units_Dat:
-        units_dat_doPatch(memCount);
+        units_dat_doPatch(memCount); // rounded up to a multiple of 12
         UNIT_TYPE_COUNT = newCount;
         break;
       case DatFile::Weapons_Dat:
@@ -127,12 +147,16 @@ namespace DatExt {
         TECH_TYPE_COUNT = newCount;
         break;
       case DatFile::Orders_Dat:
+        orders_dat_doPatch(newCount);
         break;
       case DatFile::Sfxdata_Dat:
+        sfxdata_dat_doPatch(newCount);
         break;
       case DatFile::Portdata_Dat:
+        //portdata_dat_doPatch(memCount); // rounded up to a multiple of 5
         break;
       case DatFile::Mapdata_Dat:
+        //mapdata_dat_doPatch(newCount);
         break;
     }
 
@@ -168,8 +192,41 @@ namespace DatExt {
     images_dat_unpatch();
     upgrades_dat_unpatch();
     techdata_dat_unpatch();
+
+    if (unitNamesTbl != NULL) {
+      SMemFree(unitNamesTbl, __FILE__, __LINE__, 0);
+      unitNamesTbl = NULL;
+    }
   }
 
+
+  // Loads rez\unitnames.tbl, if it exists, for extended unit ID names
+  void loadUnitNamesTbl() {
+    HANDLE hFile = NULL;
+    u32 size = 0;
+    int read;
+    void* data = NULL;
+
+    if (unitNamesTbl != NULL) return; // already loaded
+
+    if (SFileOpenFileEx(NULL, "rez\\unitnames.tbl", 0, &hFile)) {
+      size = SFileGetFileSize(hFile);
+      if (size > 2) {
+        data = SMemAlloc(size, __FILE__, __LINE__, 0);
+        if (data != NULL) {
+          if (SFileReadFile(hFile, data, size, &read, 0)) {
+            // successfully loaded
+            unitNamesTbl = (StringTbl*)data;
+          }
+          else {
+            // there was an error -- free memory
+            SMemFree(data, __FILE__, __LINE__, 0);
+          }
+        }
+      }
+      SFileCloseFile(hFile);
+    }
+  }
 
 
 

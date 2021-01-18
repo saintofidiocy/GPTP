@@ -28,7 +28,8 @@ s32 images_r[] = {/* grp */        0,  0x004D7262 +1,  0, 0,
 
 
 // Images.dat Arrays:
-void* img_newArrs[4] = {0}; // one for each of the following:
+const int IMG_ARR_COUNT = 4;
+void* img_newArrs[IMG_ARR_COUNT] = {0}; // one for each of the following:
 
            // ID offset, ptr, ptr, ptr, ..., 0, ...
 u32 img_grpArr[] = {0,    0x0048D76D +3, 0x0048DAA7 +3, 0x004D4E20 +3, 0x004D50E1 +1, 0x004D5A57 +3, 0x004D5E20 +3, 0x004D6360 +3, 0x004D67EC +3, 0x004D682F +3, 0x004D701B +3, 0x004D7267 +1,  0, 
@@ -75,26 +76,26 @@ namespace DatExt {
 
     // img_grpArr
     // - Null-terminated list of null-terminated lists of addresses
-    img_newArrs[0] = malloc(newCount * 4);
+    img_newArrs[0] = malloc(newCount * sizeof(u32));
     // - First value in list is the image ID referenced
     for(i=0; img_grpArr[i] != 0 || i == 0; i++){
-      offs = (u32)img_newArrs[0] + img_grpArr[i++] * 4; // ID offset
+      offs = (u32)img_newArrs[0] + img_grpArr[i++] * sizeof(u32); // ID offset
       i += simpleReplace(&img_grpArr[i], offs);
     }
 
     // img_loArr
-    img_newArrs[1] = malloc(newCount * 4 * 5);
+    img_newArrs[1] = malloc(newCount * sizeof(u32) * 5);
     // - 5 null-terminated lists of addresses, one for each lo? type
     for(i=0,j=0; i < 5; i++,j++){
-      offs = (u32)img_newArrs[1] + newCount * 4 * i;
+      offs = (u32)img_newArrs[1] + newCount * sizeof(u32) * i;
       j += simpleReplace(&img_loArr[j], offs);
     }
 
     // img_loShield
-    img_newArrs[2] = malloc(newCount * 4);
+    img_newArrs[2] = malloc(newCount * sizeof(u32));
     // - 2 null-terminated lists of addresses, one references 0x52E5C8 and the other 0x52F528 (ID#984 ?) 
     for(i=0,j=0; i < 2; i++,j++){
-      offs = (u32)img_newArrs[2] + i * 984 * 4;
+      offs = (u32)img_newArrs[2] + i * 984 * sizeof(u32);
       j += simpleReplace(&img_loShield[j], offs);
     }
 
@@ -121,7 +122,7 @@ namespace DatExt {
 
   
   void images_dat_unpatch() {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < IMG_ARR_COUNT; i++) {
       if (img_newArrs[i] != NULL) {
         free(img_newArrs[i]);
         img_newArrs[i] = NULL;
