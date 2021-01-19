@@ -10,9 +10,12 @@
 #define SCBW_DATA(type, name, offset)  type const name = (type)offset;
 
 // Pointers to default data
+AI_Main* AIScriptController_dat[] = { (AI_Main*)(0x0068FEE8 + 1256 * 0), (AI_Main*)(0x0068FEE8 + 1256 * 1), (AI_Main*)(0x0068FEE8 + 1256 * 2), (AI_Main*)(0x0068FEE8 + 1256 * 3),
+                                      (AI_Main*)(0x0068FEE8 + 1256 * 4), (AI_Main*)(0x0068FEE8 + 1256 * 5), (AI_Main*)(0x0068FEE8 + 1256 * 6), (AI_Main*)(0x0068FEE8 + 1256 * 7) };
+
 _uavail UnitAvailability_dat = { (u8*)(0x0057F27C + 228 * 0), (u8*)(0x0057F27C + 228 * 1), (u8*)(0x0057F27C + 228 * 2), (u8*)(0x0057F27C + 228 * 3),
-                                  (u8*)(0x0057F27C + 228 * 4), (u8*)(0x0057F27C + 228 * 5), (u8*)(0x0057F27C + 228 * 6), (u8*)(0x0057F27C + 228 * 7),
-                                  (u8*)(0x0057F27C + 228 * 8), (u8*)(0x0057F27C + 228 * 9), (u8*)(0x0057F27C + 228 * 10), (u8*)(0x0057F27C + 228 * 11) };
+                                 (u8*)(0x0057F27C + 228 * 4), (u8*)(0x0057F27C + 228 * 5), (u8*)(0x0057F27C + 228 * 6), (u8*)(0x0057F27C + 228 * 7),
+                                 (u8*)(0x0057F27C + 228 * 8), (u8*)(0x0057F27C + 228 * 9), (u8*)(0x0057F27C + 228 * 10), (u8*)(0x0057F27C + 228 * 11) };
 
 ImagesDatExtraOverlayLO_Files lo_files_dat = { (LO_Header**)0x0051F2A8, (LO_Header**)0x00520244, (LO_Header**)0x005211E0, (LO_Header**)0x0052217C, (LO_Header**)0x00523118 };
 
@@ -41,14 +44,14 @@ SCBW_DATA_VAR(UnitStatFuncArrayEntry*, unitStatFuncs_var, 0x005193A0);
 SCBW_DATA_VAR(const LO_Header* const*, shieldOverlays_var, 0x0052E5C8);
 SCBW_DATA_VAR(u8*, damageOverlayFrame_var, 0x005240D0);
 SCBW_DATA_VAR(GrpHead* const*, imageGrpGraphics_var, 0x0051CED0);
-SCBW_DATA_VAR(AI_Main*, AIScriptController_var, 0x0068FEE8); // @TODO:
 SCBW_DATA_VAR(u32*, aiStrength_var, 0x006BB210);
 
 // scbwdata expects pointer references, so make struct pointers to reference
-SCBW_DATA_VAR(_uavail*, UnitAvailability_var, &UnitAvailability_var);
-SCBW_DATA_VAR(ImagesDatExtraOverlayLO_Files*, lo_files_var, &lo_files_var);
-SCBW_DATA_VAR(_bwTechs*, TechBw_var, &TechBw_var);
-SCBW_DATA_VAR(_bwUpgrs*, UpgradesBw_var, &UpgradesBw_var);
+SCBW_DATA_VAR(AI_Main**, AIScriptController_var, &AIScriptController_dat);
+SCBW_DATA_VAR(_uavail*, UnitAvailability_var, &UnitAvailability_dat);
+SCBW_DATA_VAR(ImagesDatExtraOverlayLO_Files*, lo_files_var, &lo_files_dat);
+SCBW_DATA_VAR(_bwTechs*, TechBw_var, &TechBw_dat);
+SCBW_DATA_VAR(_bwUpgrs*, UpgradesBw_var, &UpgradesBw_dat);
 
 
 // Define the extern variables
@@ -61,9 +64,9 @@ SCBW_DATA_DEF(UnitStatFuncArrayEntry*, unitStatFuncs, unitStatFuncs_var);
 SCBW_DATA_DEF(const LO_Header* const*, shieldOverlays, shieldOverlays_var);
 SCBW_DATA_DEF(u8*, damageOverlayFrame, damageOverlayFrame_var);
 SCBW_DATA_DEF(GrpHead* const*, imageGrpGraphics, imageGrpGraphics_var);
-SCBW_DATA_DEF(AI_Main*, AIScriptController, AIScriptController_var);
 SCBW_DATA_DEF(u32*, aiStrength, aiStrength_var);
 
+SCBW_DATA_DEF(AI_Main**, AIScriptController, AIScriptController_var);
 SCBW_DATA_DEF(_uavail*, UnitAvailability, UnitAvailability_var);
 SCBW_DATA_DEF(ImagesDatExtraOverlayLO_Files*, lo_files, lo_files_var);
 SCBW_DATA_DEF(_bwTechs*, TechBw, TechBw_var);

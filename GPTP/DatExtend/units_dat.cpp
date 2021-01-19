@@ -507,6 +507,8 @@ namespace DatExt {
         bstat[i].UnitStatCondFunc = bstat[4].UnitStatCondFunc;
         bstat[i].UnitStatActFunc = bstat[4].UnitStatActFunc;
       } else { // Normal
+        bunit[i].buttonsInSet = bunit[3].buttonsInSet;
+        bunit[i].firstButton = bunit[3].firstButton;
         bunit[i].connectedUnit = 0xFFFF; // Dunno what this is
         bstat[i].unitId = i;
         bstat[i].UnitStatCondFunc = bstat[0].UnitStatCondFunc;

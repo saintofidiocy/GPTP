@@ -1,13 +1,16 @@
 #include "dat_load.h"
 #include <SCBW/api.h>
 #include <DatExtend/datext.h>
+#include <hook_tools.h>
 
 
 //helper functions def
 namespace {
   void* fastFileRead(u32 arg1, u32* psize, const u8* filename, u32 arg4, u32 arg5, const char* dbg_file, u32 dbg_line);
   void SysWarn_FileNotFound(u32 code, const u8* filename);
-  typedef u32(__stdcall *SMemFree_type)(void* ptr, char* filename, int line, int idk); // why doesn't gptp have storm functions already
+
+  // why doesn't gptp have storm functions already
+  typedef u32(__stdcall *SMemFree_type)(void* ptr, char* filename, int line, int idk);
   SMemFree_type SMemFree = (SMemFree_type)(0x00410070);
 };
 
@@ -43,9 +46,13 @@ namespace hooks {
     SMemFree(data, "Starcraft\\SWAR\\lang\\gamedata.cpp", 402, 0);
 
     // Apply Flingy Expand patch to default units.dat file, so that flingy datatype will be consistent whether DatExt is used or not
-    if (datTable == (DatLoad*)DatExt::LoadTable::Units_Dat && datTable[0].length == 1) {
-      DatExt::units_dat_flingyExpand();
+    if (datTable == (DatLoad*)DatExt::LoadTable::Units_Dat) {
+      DatExt::loadUnitNamesTbl(); // load extended unit names table
+      if (datTable[0].length == 1) {
+        DatExt::units_dat_flingyExpand();
+      }
     }
+
   }
 
 }; // hooks
