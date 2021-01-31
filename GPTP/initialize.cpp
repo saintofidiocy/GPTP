@@ -72,7 +72,6 @@
 #include "hooks/orders/burrow_orders.h"
 #include "hooks/orders/cloak_nearby_units_order.h"
 #include "hooks/orders/critter_order.h"
-#include "hooks/orders/critter_order.h"
 #include "hooks/orders/doodad_orders.h"
 #include "hooks/orders/enter_nydus.h"
 #include "hooks/orders/harvest_orders.h"
